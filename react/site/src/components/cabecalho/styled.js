@@ -24,23 +24,13 @@ const Container = styled.div`
 
 
 
-    .left-button button {
+    .left-button button, .refresh-button button {
         border-radius: 50%;
-        background-color: #986CDF;
+        background-color: #119FDC;
         width: 44px;
         height: 44px;
         border: none;
         margin: .4em;
-    }
-
-    .refresh-button button {
-        border-radius: 50%;
-        background-color: #986CDF;
-        width: 44px;
-        height: 44px;
-        border: none;
-        margin: .4em;
-        
     }
 
 
@@ -62,6 +52,16 @@ const Container = styled.div`
         width: 97%;
         align-self: center;
         background-color: #e9e9e9;
+    }
+
+    .notification{
+        background: #119FDC;
+        color: white;
+        padding: 0.1em 0.4em;
+        border-radius: 5em;
+        border: 2px solid white;
+        margin: 0 0 0 -1em;
+        font-size: 12px;
     }
 `
 

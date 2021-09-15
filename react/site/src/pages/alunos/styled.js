@@ -17,7 +17,7 @@ const Container = styled.div`
     }
 
     .bar-new-student {
-        border: 3px solid #986CDF;
+        border: 3px solid #119FDC;
         border-radius: .5em;
         margin-right: .4em;
         background-color: #986CDF;
@@ -43,7 +43,9 @@ const Container = styled.div`
         display: flex;
         flex-direction: row;
         align-items: center;
+        text-align: right;
     }
+
     .input {
         margin-top: .5em;
         margin-bottom: .5em;
@@ -73,37 +75,23 @@ const Container = styled.div`
 
     }
 
-    .name-student {
+    .title-input {
         font-size: 18px;
         color: #615858;
-        width: 5.5em;
-        padding-left: 1em;
+        width: 6em;
         font-weight: 800;
+        margin-right: 0.4em;
+    }
+    .link-img > input{
+        width: 580px;
     }
 
-
-    .number-student {
-        font-size: 18px;
-        color: #615858;
-        width: 5.5em;
-        font-weight: 800;
+    .description-product > textarea {
+        border: 1px solid #A8A8A8;
+        border-radius: 5px;
+        margin: 1.5em 0 0 0;
+        resize: none;
     }
-
-    .class-student {
-        font-size: 18px;
-        color: #615858;
-        margin-right: 0.8em;
-        font-weight: 800;
-    }
-
-    .corse-student {
-        font-size: 18px;
-        color: #615858;
-        margin-right: 1em;
-        font-weight: 800;
-    }
-
-
     .button-create {
         align-self: flex-end;
         justify-self: flex-end;
@@ -114,7 +102,7 @@ const Container = styled.div`
         width: 106px;
         height: 36px;
 
-        background: #E911C6;
+        background: #119FDC;
         border-radius: 44px;
         border: none;
         color: white;
@@ -221,7 +209,7 @@ const Container = styled.div`
     }
 
     thead {
-        background-color: #986CDF;
+        background-color: #6CC3DF;
     }
 
     table {
@@ -310,6 +298,8 @@ const Container = styled.div`
         height: 57px;
         
     }
+
+
 `
 
 const Conteudo = styled.div`

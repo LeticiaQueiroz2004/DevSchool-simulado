@@ -19,66 +19,97 @@ import Api from '../../service/api';
 const api = new Api();
 
 export default function Index() {
+  
+    const loading = useRef(null);
 
-    const ref = useRef(null)
-    const loading = useRef(null); 
-
-
-    const [ alunos, setAlunos] = useState([]);
+    const [ produtos, setProdutos] = useState([]);
     const [ nome, setNome] = useState('');
-    const [ chamada, setChamada] = useState('');
-    const [ turma, setTurma] = useState('');
-    const [ curso, setCurso] = useState('');
+    const [ categoria, setcategoria] = useState('');
+    const [ precoDE, setPrecoDE] = useState('');
+    const [ precoPOR, setPrecoPOR] = useState('');
+    const [ avaliacao, setAvaliacao] = useState('');
+    const [ estoque, setEstoque] = useState('');
+    const [ descricao, setDescricao] = useState('');
+    const [ linkIMG, setLinkIMG] = useState('');
     const [ idAlterando, setIdAlterando] = useState(0);
 
     async function listar() {
+        loading.current.continuousStart();
+        
         let r = await api.listar();
-        setAlunos(r);
+        setProdutos(r);
+
+        loading.current.complete();
+
     }
 
     async function inserir() {
-        if (chamada == null || chamada <= 0) 
+         if (nome == null || nome == '' )
         {
-            toast.error('😬 Número de chamada inválido!')
+            toast.error('😬 Por favor, Informe o nome do produto!')
             return
-        }
-
-        else if (nome == null || nome == '' || chamada == null || curso == null || curso == '' || turma == null || turma == '' )
-        {
-            toast.error('😬 Todos os campos precisam ser preenchidos!')
+        }  else if (categoria == null || categoria == '') {
+            toast.error('😬 Por favor, Informe a categoria do produto!')
             return
-
-        } else {
+        } else if (isNaN(avaliacao)) {
+            toast.error('😬 A avaliação do produto requer apenas números')
+            return
+        } else if (avaliacao <= 0) {
+            toast.error('😬 A avaliação do produto só pode ser positiva')
+            return
+        } else if (isNaN(precoDE) || isNaN(precoPOR)) {
+            toast.error('😬 Os preços do produto requer apenas números')
+            return
+        } else if (avaliacao <= 0) {
+            toast.error('😬 Os preços do produto só pode ser positivo')
+            return
+        } 
+        else {
 
             if (idAlterando == 0) {
-                let r = await api.inserir(nome, chamada, curso, turma);
-              
+                let r = await api.inserir(nome, categoria, precoDE, precoPOR, avaliacao, descricao, estoque, linkIMG)
+                
                 if (r.erro)
                     toast.error(r.erro)
-                else toast.dark('💕 Aluno inserido!')            
+                else toast.dark('💕 Produto inserido!')            
             } else {
-                let r = await api.alterar(idAlterando, nome, chamada,  curso, turma)
-                    toast.dark(' 💕 Aluno alterado!')
+                let r = await api.alterar(idAlterando, nome, categoria, precoDE, precoPOR, avaliacao, descricao, estoque, linkIMG)
+                    toast.dark(' 💕 Produto alterado!')
             }
 
         }
-
-        limparCampos();
-        listar();
+        limparCampos()
+        listar()
     }
-
+    
     function limparCampos() {
         setNome('');
-        setChamada('');
-        setCurso('');
-        setTurma('');
+        setcategoria('');
+        setAvaliacao('');
+        setPrecoDE('');
+        setPrecoPOR('');
+        setEstoque('');
+        setDescricao('');
+        setLinkIMG('');
         setIdAlterando(0);
     }
 
-   function remover(id) {
+    async function editar (item) {
+        setNome(item.nm_produto);
+        setcategoria(item.ds_categoria);
+        setAvaliacao(item.vl_avaliacao);
+        setPrecoPOR(item.vl_preco_por);
+        setEstoque(item.qtd_estoque);
+        setDescricao(item.ds_produto);
+        setLinkIMG(item.img_produto);
+        setPrecoDE(item.vl_preco_de);
+        setIdAlterando(item.id_produto);
+    }
+
+    function remover(id) {
         confirmAlert({
-            title: 'Remover aluno',
-            message: `Tem certeza que deseja remover o aluno ${id} ?`,
+            title: 'Remover Produto',
+            message: `Tem certeza que deseja remover o produto ${id} ?`,
             buttons: [
                 {
                     label: 'Sim',
@@ -88,7 +119,7 @@ export default function Index() {
                         if (r.erro)
                             toast.error(`${r.erro}`);
                         else{
-                            toast.dark('😬 Aluno removido!');
+                            toast.dark('😬 Produto removido!');
                             listar();
                         }
                     }
@@ -100,24 +131,16 @@ export default function Index() {
         });
     }
 
-    async function editar (item) {
-        setNome(item.nm_aluno);
-        setChamada(item.nr_chamada);
-        setTurma(item.nm_turma);
-        setCurso(item.nm_curso);
-        setIdAlterando(item.id_matricula);
-    }
-
     useEffect(() => {
         listar();
     }, [])
 
    
-  
+
     return (
         <Container>
-            <LoadingBar color='#f11946' ref={ref} />
             <ToastContainer/>
+            <LoadingBar color="#119FDC" ref={loading} />
             <Menu />
             <Conteudo>
                 <Cabecalho />
@@ -126,31 +149,47 @@ export default function Index() {
                         
                         <div class="text-new-student">
                             <div class="bar-new-student"></div>
-                            <div class="text-new-student">{idAlterando == 0 ? "Novo Aluno" : "Alterando Aluno " + idAlterando} </div>
+                            <div class="text-new-student"> Novo Produto </div>
                         </div>
 
                         <div class="input-new-student"> 
                             <div class="input-left">
                                 <div class="agp-input"> 
-                                    <div class="name-student"> Nome: </div>  
+                                    <div class="title-input"> Nome: </div>  
                                     <div class="input"> <input type="text" value={nome}  onChange={e => setNome(e.target.value)} /> </div>  
                                 </div> 
                                 <div class="agp-input">
-                                    <div class="number-student"> Chamada: </div>  
-                                    <div class="input"> <input type="text" value={chamada}  onChange={e => setChamada(e.target.value)} /> </div> 
+                                    <div class="title-input"> Categoria: </div>  
+                                    <div class="input"> <input type="text" value={categoria}  onChange={e => setcategoria(e.target.value)} /> </div> 
+                                </div>
+                                <div class="agp-input">
+                                    <div class="title-input"> Avaliação: </div>  
+                                    <div class="input"> <input type="text" value={avaliacao}  onChange={e => setAvaliacao(e.target.value)}/> </div> 
                                 </div>
                             </div>
 
                             <div class="input-right">
                                 <div class="agp-input">
-                                    <div class="corse-student"> Curso: </div>  
-                                    <div class="input"> <input type="text" value={curso}  onChange={e => setCurso(e.target.value)} /> </div>  
+                                    <div class="title-input"> Preço DE: </div>  
+                                    <div class="input"> <input type="text" value={precoDE}  onChange={e => setPrecoDE(e.target.value)} /> </div>  
                                 </div>
                                 <div class="agp-input">
-                                    <div class="class-student"> Turma: </div>  
-                                    <div class="input"> <input type="text" value={turma}  onChange={e => setTurma(e.target.value)} /> </div> 
+                                    <div class="title-input"> Preço POR: </div>  
+                                    <div class="input"> <input type="text" value={precoPOR}  onChange={e => setPrecoPOR(e.target.value)}/> </div> 
+                                </div>
+                                <div class="agp-input">
+                                    <div class="title-input"> Estoque: </div>  
+                                    <div class="input"> <input type="text" value={estoque}  onChange={e => setEstoque(e.target.value)}/> </div> 
                                 </div>
                             </div>
+                        </div>
+                        <div class="agp-input">
+                            <div class="title-input"> Link Imagem: </div>  
+                            <div class="link-img"> <input type="text" value={linkIMG}  onChange={e => setLinkIMG(e.target.value)}/> </div>
+                        </div>
+                        <div class="agp-input">
+                            <div class="title-input"> Descrição: </div>  
+                            <div class="description-product"> <textarea rows='7' cols='93' value={descricao}  onChange={e => setDescricao(e.target.value)}/> </div>
                             <div class="button-create"> <button onClick={inserir}> {idAlterando == 0 ? "Cadastrar" : "Alterar" } </button> </div>
                         </div>
                     </div>
@@ -158,17 +197,18 @@ export default function Index() {
                     <div class="student-registered-box">
                         <div class="row-bar"> 
                             <div class="bar-new-student"> </div>
-                            <div class="text-registered-student"> Alunos Matriculados </div>
+                            <div class="text-registered-student"> Produtos Matriculados </div>
                         </div>
                     
                         <table class ="table-user">
                             <thead>
                                 <tr>
+                                    <th>  </th>
                                     <th> ID </th>
-                                    <th> Nome </th>
-                                    <th> Chamada </th>
-                                    <th> Turma </th>
-                                    <th> Curso </th>
+                                    <th> Produto </th>
+                                    <th> Categoria </th>
+                                    <th> Preço </th>
+                                    <th> Estoque </th>
                                     <th class="coluna-acao"> </th>
                                     <th class="coluna-acao"> </th>
                                 </tr>
@@ -176,16 +216,19 @@ export default function Index() {
                     
                             <tbody>
 
-                                {alunos.map((item, i) => 
+                                {produtos.map((item, i) => 
 
                                     <tr className={ i % 2 == 0 ? "linha-alternada" : "" }>
-                                        <td> {item.id_matricula} </td>
-                                        <td> {item.nm_aluno != null && item.nm_aluno.length >= 25 ? item.nm_aluno.substr(0, 25) + '...' : item.nm_aluno} </td>
-                                        <td> {item.nr_chamada} </td>
-                                        <td> {item.nm_turma} </td>
-                                        <td> {item.nm_curso} </td>
-                                        <td class="coluna-acao"> <button onClick={() => editar(item)}> <img src="/assets/images/edit.svg" alt="" /> </button> </td>
-                                        <td class="coluna-acao"> <button onClick={() => remover(item.id_matricula) }> <img src="/assets/images/trash.svg" alt="" /> </button> </td>
+                                        <td> <img src={item.img_produto} alt="" width="30px"/> </td>
+                                        <td> {item.id_produto} </td>
+                                        <td titlle={item.nm_produto}> 
+                                            {item.nm_produto != null && item.nm_produto.length >= 25 ? item.nm_produto.substr(0, 25) + '...' : item.nm_produto} 
+                                        </td>
+                                        <td> {item.ds_categoria} </td>
+                                        <td> {item.vl_preco_por} </td>
+                                        <td> {item.qtd_estoque} </td>
+                                        <td class="coluna-acao"> <button onClick={() => editar(item) }> <img src="/assets/images/edit.svg" alt="" /> </button> </td>
+                                        <td class="coluna-acao"> <button onClick={() => remover(item.id_produto) }> <img src="/assets/images/trash.svg" alt="" /> </button> </td>
                                     </tr>
 
                                 )}
