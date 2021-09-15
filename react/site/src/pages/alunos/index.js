@@ -44,6 +44,7 @@ export default function Index() {
     }
 
     async function inserir() {
+        loading.current.continuousStart();
          if (nome == null || nome == '' )
         {
             toast.error('😬 Por favor, Informe o nome do produto!')
@@ -78,6 +79,7 @@ export default function Index() {
             }
 
         }
+        loading.current.continuousStart();
         limparCampos()
         listar()
     }
